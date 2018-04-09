@@ -84,4 +84,14 @@ tips：
 1.在meta指定数据库的主键.pk=demo_id
 
 ## 示例demo:
+  以在服务器上搭建同步pg用户表的数据同步，实现用户模糊搜索为例。
+  
+### 1.启动控制台
+    编译打包console代码。配置schema存储的mysql，建表schema_registry,负责持久化。
 
+### 2.启动用户表的user_puller
+    模拟zk节点数据，设置worker类型，源数据库配置地址，relay类型和mq地址，任务周期等，启动spring-boot app即可。
+    
+### 3.启动用户表的user_integration
+    模拟zk节点数据，设置worker类型，目标数据库配置地址，mq地址，启动spring-boot app即可。
+### 4.可选:使用层。使用源码包melot-data-change-searcher查询es
