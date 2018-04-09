@@ -15,7 +15,8 @@
    > [databus_maven]https://github.com/cj121992/databus-maven
    - 4.relay组件: relay组件在puller worker容器中，负责将puller抓取的数据存储起来，供整合器消费使用.目前提供rocketmq实现的relay。
    - 5.integration组件：该组件在integrtion容器中，负责将获取到的变更数据整合到目标数据库。也是一个可拓展的组件，源码提供了es和pg db的同构实现。
-   能将获取的变更流数据同步更新到数据库中。对于pg同构数据库来说，没有表则建表，dml操作则对应。
+   能将获取的变更流数据同步更新到数据库中。对于pg同构数据库来说，没有表则建表，dml操作则对应。integration具体有两部分，filter和output，类似
+   logstash中的概念，支持grok，或者自定义的字段整合。(譬如多个字段合一之类的概念)。output负责将数据写入目标数据库，可以类比为logstash中的output概念。
    - 6.job组件: job组件位于worker容器中，根据类型负责周期任务或者消费者任务，周期任务通过quatz实现，消费者任务则是直接使用rocketmq的消费端代码写法，将获取的数据转发到integration中。一个worker中可以有多个job。
 ## 应用图
 ![](https://raw.githubusercontent.com/cj121992/datachange/master/resource/clipboard.png)
@@ -81,3 +82,6 @@ drud                  ->  string(值为insert,update,delete)
 
 tips：
 1.在meta指定数据库的主键.pk=demo_id
+
+## 示例demo:
+
