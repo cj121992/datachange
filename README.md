@@ -7,7 +7,11 @@
 
 ## 架构图
 ![](https://raw.githubusercontent.com/cj121992/datachange/master/resource/%E6%95%B0%E6%8D%AE%E5%8F%98%E6%9B%B4%E6%B5%81%E6%9E%B6%E6%9E%84.png)
-
+## 主要组件说明:
+   - **1.console:Schema registry server,主要负责schema的管理,提供统一restful接口,可以供开放数据中心和大数据中心查询,worker组件定时通过http接口获取实时的register schema（后续会加入worker的管理功能，通过操作zk去更改worker的配置和运行状态）
+   - **2.worker组件：核心容器，一个worker是一个进程，为变更流中最基本的工作单位，多个worker可以是分布在多台机器上的进程。根据worker类型目前分为
+   pullerworker和integration worker，负责抓取数据变更或者从中继器订阅变更数据，整合入目标数据库。
+   - **3.puller组件：puller组件在worker容器中，负责抓取数据变更，开发者可自由拓展改组件，实现不同源数据库变更的抓取。例如源码中melot-data-change-puller-pg为对pg数据库的变更抓取，实现原理为pg9.4之后的logical_decoding，原理可以自行搜索。开启方法可以参考我的另一个项目databus_maven
 ## 应用图
 ![](https://raw.githubusercontent.com/cj121992/datachange/master/resource/clipboard.png)
 
