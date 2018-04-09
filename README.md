@@ -91,8 +91,8 @@ tips：
 
 ### 2.启动用户表的user_puller
     模拟zk节点数据，设置worker类型，源数据库配置地址，relay类型和mq地址，任务周期等，启动spring-boot app即可。
-   ![]（https://raw.githubusercontent.com/cj121992/datachange/master/resource/1.png)
+![](https://raw.githubusercontent.com/cj121992/datachange/master/resource/1.png)
 ### 3.启动用户表的user_integration
     模拟zk节点数据，设置worker类型，目标数据库配置地址，mq地址，启动spring-boot app即可。
-   ![] (https://raw.githubusercontent.com/cj121992/datachange/master/resource/2.png）
+![](https://raw.githubusercontent.com/cj121992/datachange/master/resource/2.png)
 ### 4.可选:使用层。使用源码包melot-data-change-searcher查询es
