@@ -8,10 +8,15 @@
 ## 架构图
 ![](https://raw.githubusercontent.com/cj121992/datachange/master/resource/%E6%95%B0%E6%8D%AE%E5%8F%98%E6%9B%B4%E6%B5%81%E6%9E%B6%E6%9E%84.png)
 ## 主要组件说明:
-   - **1.console:Schema registry server,主要负责schema的管理,提供统一restful接口,可以供开放数据中心和大数据中心查询,worker组件定时通过http接口获取实时的register schema（后续会加入worker的管理功能，通过操作zk去更改worker的配置和运行状态）
-   - **2.worker组件：核心容器，一个worker是一个进程，为变更流中最基本的工作单位，多个worker可以是分布在多台机器上的进程。根据worker类型目前分为
-   pullerworker和integration worker，负责抓取数据变更或者从中继器订阅变更数据，整合入目标数据库。
-   - **3.puller组件：puller组件在worker容器中，负责抓取数据变更，开发者可自由拓展改组件，实现不同源数据库变更的抓取。例如源码中melot-data-change-puller-pg为对pg数据库的变更抓取，实现原理为pg9.4之后的logical_decoding，原理可以自行搜索。开启方法可以参考我的另一个项目databus_maven
+   - 1.console:Schema registry server,主要负责schema的管理,提供统一restful接口,可以供开放数据中心和大数据中心查询,worker组件定时通过http接口获取实时的register schema（后续会加入worker的管理功能，通过操作zk去更改worker的配置和运行状态）
+   - 2.worker组件：核心容器，一个worker是一个进程，为变更流中最基本的工作单位，多个worker可以是分布在多台机器上的进程。根据worker类型目前分为
+   pullerworker和integration worker，负责抓取数据变更或者从中继器订阅变更数据，整合入目标数据库。所有组件内部有schemaRegistryService与console交互，负责获取最新的schema，根据变更流指定的schemaId获取schema对变更流的数据序列化或者反序列化。worker通过zk上节点数据，watcher控制启停，和具体的类型和所有的job任务配置。
+   - 3.puller组件：puller组件在puller worker容器中，负责抓取数据变更，开发者可自由拓展改组件，实现不同源数据库变更的抓取。例如源码中melot-data-change-puller-pg为对pg数据库的变更抓取，实现原理为pg9.4之后的logical_decoding，原理可以自行搜索。开启方法可以参考我的另一个项目
+   > [databus_maven]https://github.com/cj121992/databus-maven
+   - 4.relay组件: relay组件在puller worker容器中，负责将puller抓取的数据存储起来，供整合器消费使用.目前提供rocketmq实现的relay。
+   - 5.integration组件：该组件在integrtion容器中，负责将获取到的变更数据整合到目标数据库。也是一个可拓展的组件，源码提供了es和pg db的同构实现。
+   能将获取的变更流数据同步更新到数据库中。对于pg同构数据库来说，没有表则建表，dml操作则对应。
+   - 6.job组件: job组件位于worker容器中，根据类型负责周期任务或者消费者任务，周期任务通过quatz实现，消费者任务则是直接使用rocketmq的消费端代码写法，将获取的数据转发到integration中。一个worker中可以有多个job。
 ## 应用图
 ![](https://raw.githubusercontent.com/cj121992/datachange/master/resource/clipboard.png)
 
